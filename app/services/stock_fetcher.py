@@ -1,12 +1,21 @@
 import yfinance as yf
-import matplotlib.pyplot as plt
-meta = yf.Ticker("META")
-for key, value in meta.info.items():
-    print(f"{key}: {value}")
+
+class StockFetcher:
+    def fetch_stock_data(self, ticker: str):
+        stock = yf.Ticker(ticker)
+        info = stock.info
+        stock_data = {
+            "ticker": ticker,
+            "company_name": info.get("longName") or info.get("shortName"),
+            "sector": info.get("sector", "N/A"),
+            "pe_ratio": info.get("trailingPE", 0.0),
+            "summary": info.get("longBusinessSummary", "")
+        }
+        return stock_data
     
-data = meta.history(period="1y")
-print(data.to_string())
-data['Close'].plot(title="Meta Stock Price (1 Year)")
-plt.xlabel("Date")
-plt.ylabel("Close Price (USD)")
-plt.show()
+    
+    
+if __name__ == "__main__":
+    fetcher = StockFetcher()
+    data = fetcher.fetch_stock_data("META")
+    print(data)
